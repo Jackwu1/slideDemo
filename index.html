@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>我的轮播</title>
+		<style type="text/css">
+			*{
+				margin: 0;
+				padding: 0;
+			}
+			.box {
+				position: relative;
+				width: 400px;
+				height: 300px;
+				/* overflow: hidden; */
+				left: 50%;                                     
+				margin-left: -200px;
+				margin-top: 50px;
+			}
+			.box > div{
+				position: absolute;
+				top: 0px;
+				left: 0px;
+				transition: all 1s; 
+			}
+			.box > div.currentPos {
+				transform: translateX(0%);
+				z-index: 33;
+			}
+			.box > div.leavePos {
+				transform: translateX(-100%);
+			}
+			.box > div.enterPos {
+				transform: translateX(100%);
+			}
+			.btn {
+				text-align: center;
+			}
+			.btn > button {
+				padding: 5px 10px;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="window">
+			<div class="box">
+				<div class="currentPos">
+					<img src="img/1.png" width="400" height="300">
+				</div>
+				<div class="enterPos">
+					<img src="img/2.png" width="400" height="300">
+				</div>
+				<div class="enterPos">
+					<img src="img/3.png" width="400" height="300">
+				</div>
+				<div class="enterPos">
+					<img src="img/4.png" width="400" height="300">
+				</div>
+				<div class="enterPos">
+					<img src="img/5.png" width="400" height="300">
+				</div>
+			</div>
+			<div class="btn">
+				<button>1</button>
+				<button>2</button>
+				<button>3</button>
+				<button>4</button>
+				<button>5</button>
+			</div>
+		</div>
+		<script type="text/javascript" src="jquery-3.2.1.min.js"></script>
+		<script type="text/javascript">
+			$(function() {
+				let index = 0;
+				$('button').click(function() {
+					console.log($(this).index());
+					index = $(this).index()
+					currentPos(index);
+				})
+				
+				function currentPos(index) {
+					makeCurrent($(`.box > div:nth-child(${index + 1})`));
+					if(index - 1 >= 0) {
+						makeLeave($(`.box > div:nth-child(${index})`));
+					}
+					makeEnter($(`.box > div:nth-child(${index + 2})`))
+				}
+				
+				function makeCurrent($node) {
+					return $node.addClass('currentPos').removeClass('leavePos enterPos')
+				}
+				
+				function makeLeave($node) {
+					return $node.addClass('leavePos').removeClass('currentPos', 'enterPos');
+				}
+				
+				function makeEnter($node) {
+					return $node.addClass('enterPos').removeClass('currentPos', 'leavePos');
+				}
+			})
+		</script>
+	</body>
+</html>
