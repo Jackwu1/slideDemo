@@ -8,22 +8,33 @@
 				margin: 0;
 				padding: 0;
 			}
-			.box {
+			.fix:after {
+				content: '';
+				display: block;
+				clear: both;
+			}
+			.window {
 				position: relative;
 				width: 400px;
-				height: 300px;
-				/* overflow: hidden; */
-				left: 50%;                                     
+				overflow: hidden;
+				left: 50%;
 				margin-left: -200px;
 				margin-top: 50px;
 			}
-			.box > div{
-				position: absolute;
-				top: 0px;
-				left: 0px;
+			.box {
+				width: 2400px;
+				height: 300px;	 
+			}
+			.box.active {
 				transition: all 1s; 
 			}
-			.box > div.currentPos {
+			.box > div{
+				width: 400px;
+				height: 300px;
+				float: left;
+				/* transition: all 1s; */
+			}
+			/* .box > div.currentPos {
 				transform: translateX(0%);
 				z-index: 33;
 			}
@@ -32,36 +43,43 @@
 			}
 			.box > div.enterPos {
 				transform: translateX(100%);
-			}
+			} */
 			.btn {
 				text-align: center;
+				height: 30px;
 			}
 			.btn > button {
 				padding: 5px 10px;
+			}
+			.btn > button.active {
+				background: red;
 			}
 		</style>
 	</head>
 	<body>
 		<div class="window">
-			<div class="box">
-				<div class="currentPos">
+			<div class="box fix active">
+				<div>
 					<img src="img/1.png" width="400" height="300">
 				</div>
-				<div class="enterPos">
+				<div>
 					<img src="img/2.png" width="400" height="300">
 				</div>
-				<div class="enterPos">
+				<div>
 					<img src="img/3.png" width="400" height="300">
 				</div>
-				<div class="enterPos">
+				<div>
 					<img src="img/4.png" width="400" height="300">
 				</div>
-				<div class="enterPos">
+				<div>
 					<img src="img/5.png" width="400" height="300">
+				</div>
+				<div>
+					<img src="img/1.png" width="400" height="300">
 				</div>
 			</div>
 			<div class="btn">
-				<button>1</button>
+				<button class="active">1</button>
 				<button>2</button>
 				<button>3</button>
 				<button>4</button>
@@ -72,31 +90,49 @@
 		<script type="text/javascript">
 			$(function() {
 				let index = 0;
+				let timer = null;
+				let lastSwitch = false;
+				
+				function move(index) {
+					$('button').removeClass('active');
+					$('button').eq(index).addClass('active')
+					$('.box.active').css({
+						transform: `translateX(-${index * 400}px)`
+					})
+				}
+				
+				timer = setInterval(function() {
+					if(index >= ($('button').length)) {
+						index = 0
+					}else {
+						index ++
+					}
+					move(index)
+					if(index >= ($('button').length)) {
+						$('button').eq(0).addClass('active')
+					}
+				},1000)
+				
 				$('button').click(function() {
-					console.log($(this).index());
-					index = $(this).index()
-					currentPos(index);
+					index = $(this).index();
+					move(index)
 				})
 				
-				function currentPos(index) {
-					makeCurrent($(`.box > div:nth-child(${index + 1})`));
-					if(index - 1 >= 0) {
-						makeLeave($(`.box > div:nth-child(${index})`));
-					}
-					makeEnter($(`.box > div:nth-child(${index + 2})`))
-				}
+				$('.window').mouseover(function() {
+					clearInterval(timer)
+				})
 				
-				function makeCurrent($node) {
-					return $node.addClass('currentPos').removeClass('leavePos enterPos')
-				}
+				$('.window').mouseleave(function() {
+					timer = setInterval(function() {
+						if(index >= ($('button').length-1)) {
+							index = 0
+						}else {
+							index ++
+						}
+						move(index)
+					},1000)
+				})
 				
-				function makeLeave($node) {
-					return $node.addClass('leavePos').removeClass('currentPos', 'enterPos');
-				}
-				
-				function makeEnter($node) {
-					return $node.addClass('enterPos').removeClass('currentPos', 'leavePos');
-				}
 			})
 		</script>
 	</body>
