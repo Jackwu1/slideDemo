@@ -23,7 +23,8 @@
 			}
 			.box {
 				width: 2400px;
-				height: 300px;	 
+				height: 300px;
+				margin-left: 0px;	 
 			}
 			.box.active {
 				transition: all 1s; 
@@ -34,16 +35,6 @@
 				float: left;
 				/* transition: all 1s; */
 			}
-			/* .box > div.currentPos {
-				transform: translateX(0%);
-				z-index: 33;
-			}
-			.box > div.leavePos {
-				transform: translateX(-100%);
-			}
-			.box > div.enterPos {
-				transform: translateX(100%);
-			} */
 			.btn {
 				text-align: center;
 				height: 30px;
@@ -92,7 +83,7 @@
 				let index = 0;
 				let timer = null;
 				let lastSwitch = false;
-				
+				let box = document.getElementsByClassName('box')[0];
 				function move(index) {
 					$('button').removeClass('active');
 					$('button').eq(index).addClass('active')
@@ -101,17 +92,36 @@
 					})
 				}
 				
+				function timeMove(index) {
+					$('button').removeClass('active');
+					if(index === $('button').length) {
+						$('button').eq(0).addClass('active')
+						$('.box').css({
+							transform: `translateX(-${index * 400}px)`
+						})
+					}else if(index === 0) {
+						$('button').eq(index).addClass('active');
+						$('.box').removeClass('active').css({
+							transform: `translateX(0px)`
+						})	
+					}else {
+						$('button').eq(index).addClass('active')
+						$('.box').addClass('active').css({
+							transform: `translateX(-${index * 400}px)`
+						})
+					}
+				}
+				
 				timer = setInterval(function() {
 					if(index >= ($('button').length)) {
 						index = 0
 					}else {
 						index ++
 					}
-					move(index)
-					if(index >= ($('button').length)) {
-						$('button').eq(0).addClass('active')
-					}
+					timeMove(index)
 				},1000)
+				
+				
 				
 				$('button').click(function() {
 					index = $(this).index();
@@ -124,12 +134,12 @@
 				
 				$('.window').mouseleave(function() {
 					timer = setInterval(function() {
-						if(index >= ($('button').length-1)) {
+						if(index >= ($('button').length)) {
 							index = 0
 						}else {
 							index ++
 						}
-						move(index)
+						timeMove(index)
 					},1000)
 				})
 				
